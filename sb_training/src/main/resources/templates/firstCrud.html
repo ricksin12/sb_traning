@@ -1,0 +1,167 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>firestCrud - sel - WITS</title>
+
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+</head>
+
+<body>
+	<main class="col bd-content">
+	<div class="m-4 p-5 bg-white">
+		<form id="firstCrudForm" th:object="${firstCrudVo}">
+			<div class="form-row">
+				<div class="form-group col-md-3">
+					<label for="emplNo" class="">Name: </label> <input type="text"
+						class="form-control" id="name" name="name">
+				</div>
+			</div>
+			</br>
+			<div class="form-group col-md-3">
+				<label>Sex: </label> <select multiple id="sex" name="sex">
+					<option value="none">None</option>
+					<option value="m">man</option>
+					<option value="f">female</option>
+				</select>
+			</div>
+			</br>
+			<div class="form-row float-right">
+				<button type="button" id="btnQry">Query</button>
+				&nbsp;
+				<button type="button" id="btnDel" onclick="del()">Delete</button>
+			</div>
+		</form>
+	</div>
+	</br>
+	<div>
+		<table id="myDataTalbe">
+			<thead>
+				<tr>
+					<th>
+						<!--全選、全勾消checkbox-->
+					</th>
+					<th>name</th>
+					<th class="act-th">Action</th>
+				</tr>
+			</thead>
+
+		</table>
+	</div>
+	</main>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+		integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+		crossorigin="anonymous"></script>
+
+	<script type="text/javascript"
+		src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+		crossorigin="anonymous"></script>
+
+	<script type="text/javascript">
+		var table = $("#myDataTalbe")
+				.DataTable(
+						{
+							searching : false,
+							columns : [
+									{
+										data : "ID",
+										orderable : false,
+										render : function(data, type, obj, meta) {
+											return '<input type="checkbox"  value="' + data + '" name="chk">';
+										},
+										className : 'dt-body-center'
+									},
+									{
+										data : "NAME"
+									},
+									{
+										data : "ID", //資料行繫結屬性
+										orderable : false, // 禁用排序
+										render : function(data, type, row, meta) {
+											return "<input type='button'value='Edit' onclick='edit("
+													+ data
+													+ ")'> "
+													+ "&nbsp<input type='button' value='Delete'  onclick='del("
+													+ data + ")'>";
+										}
+									} ],
+							deferRender : true,
+							pageLength : 2,
+							order : [ [ 1, 'asc' ] ],
+							"lengthChange" : false
+						});
+
+		window.onload = function() {
+
+			$("#btnQry").click(function() {
+				$('#id').val('');
+				$.ajax({
+					url : "/firstCrud/sel",
+					method : "post",
+					data : $("#firstCrudForm").serialize(),
+					dataType : 'json',
+					success : function(data) {
+						console.log(data);
+						table.clear().rows.add(data.rowList).draw();
+					},
+					error : function(e) {
+						console.log("ERROR : ", e);
+					}
+				});
+			});
+		} // onload: end
+
+		function edit(data) {
+			console.log('/firstCrud/edit/' + data);
+			location.replace('/firstCrud/edit/' + data);
+		}
+
+		function del(id) {
+			console.log('id=' + id);
+			let idList;
+			if (id != undefined) {
+				console.log('id.length=' + id.length); // undefined
+				idList = id;
+			} else {
+				var $chkItem = $("input[name='chk']:checked");
+				console.log('chkItem=' + $chkItem);
+				console.log('chkItem.length=' + $chkItem.length);
+				if ($chkItem.length == 0) {
+					return;
+				} else {
+					var chkItemArr = [];
+					$chkItem.each(function(index) {
+						if (this.checked) {
+							chkItemArr.push(this.value)
+						}
+					})
+					idList = chkItemArr;
+				}
+			}
+
+			$.ajax({
+				url : "/firstCrud/del/" + idList,
+				method : "post",
+				data : $("#firstCrudForm").serialize(),
+				dataType : 'json',
+				success : function(data) {
+					console.log("successful");
+					console.log(data);
+				},
+				error : function(e) {
+					console.log("error : ", e);
+				}
+			});
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<title layout:fragment="title">firstCrud - add- WITS</title>
+<body>
+	<form id="firstCrud" th:object="${firstCrudVo}">
+		<div class="form-row">
+			Name: <input type="text" class="form-control" placeholder=""
+				id="name" name="name" required>
+		</div>
+		</br>
+		<div class="form-group col-md-3">
+			<label>Sex: </label> <select id="sex" name="sex">
+				<option value="none">None</option>
+				<option value="m">man</option>
+				<option value="f">female</option>
+			</select>
+		</div>
+		</br>
+		<div class="form-row float-right">
+			<button type="button" class="btn btn-success" onclick="ins();">Add
+				Test(Without DB)</button>
+			<button type="button" class="btn btn-success" onclick="insToDb();">Add
+				To DB</button>
+		</div>
+	</form>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
+
+<script type="text/javascript"
+	src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+
+<script type="text/javascript" layout:fragment="script">
+	function ins() {
+		this.event.preventDefault();
+		$.ajax({
+			type : "POST",
+			dataType : 'json',
+			url : "/firstCrud/ins",
+			data : $("#firstCrud").serialize(),
+			success : function(data) {
+				console.log("data : ", data);
+				console.log("SUCCESS");
+			},
+			error : function(e) {
+				console.log("ERROR : ", e);
+
+			}
+		});
+	}
+
+	function insToDb() {
+		this.event.preventDefault();
+		$.ajax({
+			type : "POST",
+			url : "/firstCrud/insToDb",
+			data : $("#firstCrud").serialize(),
+			dataType : 'json',
+			success : function(data) {
+				console.log("data : ", data);
+				console.log("SUCCESS");
+			},
+			error : function(e) {
+				console.log("ERROR : ", e);
+
+			}
+		});
+	}
+</script>
+</html>

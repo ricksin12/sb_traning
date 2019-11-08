@@ -1,0 +1,56 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<title layout:fragment="title">firstCrud - add- WITS</title>
+<body>
+	<form id="firstCrud" th:object="${firstCrudVo}">
+		<div class="form-row">
+			Name: <input type="text" th:value="${name}" id="name" name="name"
+				required>
+		</div>
+		</br>
+		<div class="form-group col-md-3">
+			<label>Sex: </label> <select id="sex" name="sex">
+				<option value="none">None</option>
+				<option value="m">man</option>
+				<option value="f">female</option>
+			</select>
+		</div>
+		<div class="form-row">
+			<input type="text" hidden th:value="${id}" id="id" name="id">
+		</div>
+
+		</br>
+		<div class="form-row float-right">
+			<button type="button" class="btn btn-success" onclick="upd();">Save</button>
+		</div>
+	</form>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
+
+<script type="text/javascript"
+	src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+
+<script type="text/javascript" layout:fragment="script">
+	function upd() {
+		this.event.preventDefault();
+		$.ajax({
+			type : "POST",
+			url : "/firstCrud/upd",
+			data : $("#firstCrud").serialize(),
+			dataType : 'json',
+			success : function(data) {
+				console.log("data : ", data);
+				console.log("SUCCESS");
+			},
+			error : function(e) {
+				console.log("ERROR : ", e);
+
+			}
+		});
+	}
+</script>
+</html>
